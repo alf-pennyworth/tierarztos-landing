@@ -82,7 +82,7 @@ export default function Blog() {
               <div className="grid lg:grid-cols-2">
                 <div className={`h-64 lg:h-auto bg-gradient-to-br ${post.color} flex items-center justify-center`}>
                   <div className="text-center">
-                    <span className="text-6xl font-bold font-display text-white/10">TAMG</span>
+                    <span className="text-6xl font-bold font-display text-[#f5f0e8]/10">TAMG</span>
                   </div>
                 </div>
                 <div className="p-8 lg:p-10 flex flex-col justify-center">
@@ -120,7 +120,7 @@ export default function Blog() {
                 className="glass rounded-2xl border border-border overflow-hidden group cursor-pointer h-full flex flex-col"
               >
                 <div className={`h-48 bg-gradient-to-br ${post.color} flex items-center justify-center`}>
-                  <span className="text-4xl font-bold font-display text-white/10">{post.id.split('-')[0].toUpperCase()}</span>
+                  <span className="text-4xl font-bold font-display text-[#f5f0e8]/10">{post.id.split('-')[0].toUpperCase()}</span>
                 </div>
                 <div className="p-6 flex-1 flex flex-col">
                   <div className="flex items-center gap-3 mb-3">
