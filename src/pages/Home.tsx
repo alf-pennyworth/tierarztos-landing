@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useScroll, useTransform } from 'framer-motion'
 import {
@@ -12,7 +12,6 @@ import {
   WifiOff,
   Sparkles,
   ChevronDown,
-  Terminal,
   Code2,
   Brain,
   Rocket,
@@ -27,24 +26,73 @@ import {
   TrendingUp,
   Microscope,
   Stethoscope,
+  Leaf,
+  Sun,
 } from 'lucide-react'
 import ScrollReveal, { StaggerContainer, StaggerItem } from '../components/ScrollReveal'
 
 /* ────────── Hero ────────── */
 
 function HeroSection() {
-  return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden grid-bg noise-overlay">
-      {/* Ambient glows */}
-      <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px] pointer-events-none" />
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const heroRef = useRef<HTMLElement>(null)
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-24 lg:py-32 text-center">
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!heroRef.current) return
+      const rect = heroRef.current.getBoundingClientRect()
+      setMousePos({
+        x: (e.clientX - rect.left) / rect.width,
+        y: (e.clientY - rect.top) / rect.height,
+      })
+    }
+    const hero = heroRef.current
+    hero?.addEventListener('mousemove', handleMouseMove)
+    return () => hero?.removeEventListener('mousemove', handleMouseMove)
+  }, [])
+
+  return (
+    <section
+      ref={heroRef}
+      className="relative min-h-screen flex items-center justify-center overflow-hidden paper-texture"
+    >
+      {/* Organic blobs */}
+      <motion.div
+        className="absolute top-1/4 left-1/4 w-[700px] h-[700px] rounded-full pointer-events-none shape-blob"
+        style={{
+          background: 'radial-gradient(circle, rgba(143,201,168,0.08) 0%, transparent 70%)',
+          x: (mousePos.x - 0.5) * -30,
+          y: (mousePos.y - 0.5) * -30,
+        }}
+        transition={{ type: 'spring', damping: 30 }}
+      />
+      <motion.div
+        className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] rounded-full pointer-events-none shape-egg"
+        style={{
+          background: 'radial-gradient(circle, rgba(245,158,11,0.06) 0%, transparent 70%)',
+          x: (mousePos.x - 0.5) * 20,
+          y: (mousePos.y - 0.5) * 20,
+        }}
+        transition={{ type: 'spring', damping: 30 }}
+      />
+
+      {/* Decorative leaves */}
+      <div className="absolute top-20 left-10 opacity-20 animate-drift">
+        <Leaf className="w-16 h-16 text-forest-300" />
+      </div>
+      <div className="absolute bottom-40 right-20 opacity-15 animate-drift" style={{ animationDelay: '-5s' }}>
+        <Leaf className="w-12 h-12 text-amber-400" />
+      </div>
+      <div className="absolute top-1/2 right-10 opacity-10 animate-drift" style={{ animationDelay: '-10s' }}>
+        <Sun className="w-20 h-20 text-amber-300" />
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary text-sm font-medium mb-8"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 text-sm font-medium mb-6 sm:mb-8"
         >
           <Sparkles className="w-4 h-4" />
           <span>Now with AI transcription — v2.0 live</span>
@@ -53,8 +101,8 @@ function HeroSection() {
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-          className="text-5xl sm:text-6xl lg:text-8xl font-bold font-display text-text tracking-tight leading-[0.95] mb-6"
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold font-display text-cream-100 tracking-tight leading-[0.95] mb-6 sm:mb-8"
         >
           Tierärzte verdienen{' '}
           <span className="gradient-text">bessere Software</span>
@@ -64,7 +112,7 @@ function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.2 }}
-          className="text-lg sm:text-xl text-text-muted max-w-2xl mx-auto mb-10 leading-relaxed"
+          className="text-base sm:text-lg md:text-xl text-cream-400 max-w-2xl mx-auto mb-8 sm:mb-10 leading-relaxed px-4"
         >
           Wir bauen die Zukunft der Tierarztpraxis. Mit KI. Mit Herz.
         </motion.p>
@@ -73,20 +121,20 @@ function HeroSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.35 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4"
+          className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 px-4"
         >
           <a
             href="#story"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-bg font-semibold rounded-xl hover:bg-primary-dark transition-all shadow-[0_0_30px_rgba(0,212,170,0.3)] hover:shadow-[0_0_50px_rgba(0,212,170,0.5)] text-base"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 bg-amber-500 text-forest-900 font-semibold rounded-2xl hover:bg-amber-400 transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)] hover:shadow-[0_0_50px_rgba(245,158,11,0.5)] text-sm sm:text-base"
           >
             Die Geschichte lesen
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
           </a>
           <Link
             to="/auth?signup=true"
-            className="inline-flex items-center gap-2 px-8 py-4 border border-border text-text font-semibold rounded-xl hover:border-primary/30 hover:bg-primary/5 transition-all text-base"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 border border-cream-300/20 text-cream-100 font-semibold rounded-2xl hover:border-amber-500/30 hover:bg-amber-500/5 transition-all text-sm sm:text-base"
           >
-            <Zap className="w-5 h-5 text-primary" />
+            <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
             Jetzt testen
           </Link>
         </motion.div>
@@ -96,12 +144,12 @@ function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 hidden sm:flex"
         >
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="flex flex-col items-center gap-2 text-text-dim"
+            className="flex flex-col items-center gap-2 text-cream-500"
           >
             <span className="text-xs font-mono">SCROLL</span>
             <ChevronDown className="w-5 h-5" />
@@ -131,42 +179,42 @@ function ProblemSection() {
   ]
 
   return (
-    <section id="story" className="relative py-24 lg:py-32 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+    <section id="story" className="relative py-20 sm:py-24 lg:py-32 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
-          <div className="text-center mb-16">
-            <span className="text-xs font-mono text-secondary font-semibold uppercase tracking-wider">Das Problem</span>
-            <h2 className="text-4xl lg:text-5xl font-bold font-display text-text mt-3 mb-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <span className="text-xs font-mono text-forest-200 font-semibold uppercase tracking-wider">Das Problem</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-cream-100 mt-3 mb-4">
               Die alte Art nervt
             </h2>
-            <p className="text-lg text-text-muted max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-cream-400 max-w-2xl mx-auto px-4">
               Tierärzte verbringen mehr Zeit mit Software als mit Patienten. Das ist falsch herum.
             </p>
           </div>
         </ScrollReveal>
 
         {/* Stats */}
-        <StaggerContainer className="grid md:grid-cols-3 gap-6 mb-20">
+        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-16 sm:mb-20">
           {stats.map((stat) => (
             <StaggerItem key={stat.label}>
-              <div className="glass rounded-2xl p-8 text-center border border-border hover:border-secondary/20 transition-colors">
-                <div className="text-5xl font-bold font-display gradient-text-coral mb-2">{stat.value}</div>
-                <div className="text-sm font-mono text-secondary mb-1">{stat.label}</div>
-                <div className="text-sm text-text-dim">{stat.desc}</div>
+              <div className="glass rounded-2xl p-6 sm:p-8 text-center border border-cream-300/10 hover:border-forest-200/20 transition-colors">
+                <div className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display gradient-text mb-2">{stat.value}</div>
+                <div className="text-sm font-mono text-forest-200 mb-1">{stat.label}</div>
+                <div className="text-sm text-cream-500">{stat.desc}</div>
               </div>
             </StaggerItem>
           ))}
         </StaggerContainer>
 
         {/* Pain points grid */}
-        <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {painPoints.map((point) => (
             <StaggerItem key={point.text}>
-              <div className="flex items-start gap-4 p-5 rounded-xl bg-surface border border-border">
-                <div className="w-10 h-10 rounded-lg bg-secondary/10 flex items-center justify-center shrink-0">
-                  <point.icon className="w-5 h-5 text-secondary" />
+              <div className="flex items-start gap-3 sm:gap-4 p-4 sm:p-5 rounded-xl bg-forest-800/50 border border-cream-300/10">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-forest-700 flex items-center justify-center shrink-0">
+                  <point.icon className="w-4 h-4 sm:w-5 sm:h-5 text-forest-200" />
                 </div>
-                <p className="text-sm text-text-dim leading-relaxed">{point.text}</p>
+                <p className="text-sm text-cream-400 leading-relaxed pt-1.5">{point.text}</p>
               </div>
             </StaggerItem>
           ))}
@@ -213,31 +261,31 @@ function SolutionSection() {
   ]
 
   return (
-    <section className="relative py-24 lg:py-32">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.02] to-transparent pointer-events-none" />
+    <section className="relative py-20 sm:py-24 lg:py-32">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-forest-200/[0.02] to-transparent pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
-          <div className="text-center mb-16">
-            <span className="text-xs font-mono text-primary font-semibold uppercase tracking-wider">Die Lösung</span>
-            <h2 className="text-4xl lg:text-5xl font-bold font-display text-text mt-3 mb-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <span className="text-xs font-mono text-amber-400 font-semibold uppercase tracking-wider">Die Lösung</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-cream-100 mt-3 mb-4">
               Wir haben etwas <span className="gradient-text">Neues gebaut</span>
             </h2>
-            <p className="text-lg text-text-muted max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-cream-400 max-w-2xl mx-auto px-4">
               Moderne Software für moderne Tierarztpraxen. Alles in einer Plattform.
             </p>
           </div>
         </ScrollReveal>
 
-        <StaggerContainer className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
           {features.map((f) => (
             <StaggerItem key={f.title}>
-              <div className="group glass rounded-2xl p-6 border border-border hover:border-primary/20 transition-all duration-300 hover:-translate-y-1">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                  <f.icon className="w-6 h-6 text-primary" />
+              <div className="group glass rounded-2xl p-5 sm:p-6 border border-cream-300/10 hover:border-amber-500/20 transition-all duration-300 hover:-translate-y-1 h-full">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-500/10 flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-amber-500/20 transition-colors">
+                  <f.icon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-text mb-2">{f.title}</h3>
-                <p className="text-sm text-text-dim leading-relaxed">{f.desc}</p>
+                <h3 className="text-base sm:text-lg font-semibold text-cream-100 mb-2">{f.title}</h3>
+                <p className="text-sm text-cream-400 leading-relaxed">{f.desc}</p>
               </div>
             </StaggerItem>
           ))}
@@ -251,25 +299,25 @@ function SolutionSection() {
 
 function TechnologySection() {
   return (
-    <section className="relative py-24 lg:py-32 overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+    <section className="relative py-20 sm:py-24 lg:py-32 overflow-hidden">
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-forest-200/20 to-transparent" />
 
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div>
             <ScrollReveal>
-              <span className="text-xs font-mono text-accent font-semibold uppercase tracking-wider">Die Technologie</span>
-              <h2 className="text-4xl lg:text-5xl font-bold font-display text-text mt-3 mb-4">
-                Built for <span className="text-accent">speed</span>.
+              <span className="text-xs font-mono text-amber-400 font-semibold uppercase tracking-wider">Die Technologie</span>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-cream-100 mt-3 mb-4">
+                Built for <span className="text-amber-400">speed</span>.
                 <br />
-                Built for <span className="text-primary">scale</span>.
+                Built for <span className="text-forest-200">scale</span>.
               </h2>
-              <p className="text-lg text-text-muted mb-8">
+              <p className="text-base sm:text-lg text-cream-400 mb-6 sm:mb-8">
                 Wir nutzen modernste Technologie, um eine Plattform zu schaffen, die mit Ihrer Praxis wächst.
               </p>
             </ScrollReveal>
 
-            <StaggerContainer className="space-y-4">
+            <StaggerContainer className="space-y-3 sm:space-y-4">
               {[
                 { icon: Code2, title: 'React + TypeScript', desc: 'Type-safe, komponentenbasiert, blitzschnell' },
                 { icon: Brain, title: 'AssemblyAI + Gemini', desc: 'KI-Transkription mit medizinischer Fachterminologie' },
@@ -277,13 +325,13 @@ function TechnologySection() {
                 { icon: Globe, title: 'Supabase Edge Functions', desc: 'Serverless, global verteilt, DSGVO-konform' },
               ].map((tech) => (
                 <StaggerItem key={tech.title}>
-                  <div className="flex items-start gap-4 p-4 rounded-xl bg-surface border border-border hover:border-accent/20 transition-colors group">
-                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
-                      <tech.icon className="w-5 h-5 text-accent" />
+                  <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-forest-800/50 border border-cream-300/10 hover:border-amber-500/20 transition-colors group">
+                    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0 group-hover:bg-amber-500/20 transition-colors">
+                      <tech.icon className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-text">{tech.title}</h4>
-                      <p className="text-sm text-text-dim">{tech.desc}</p>
+                      <h4 className="font-semibold text-cream-100 text-sm sm:text-base">{tech.title}</h4>
+                      <p className="text-xs sm:text-sm text-cream-400">{tech.desc}</p>
                     </div>
                   </div>
                 </StaggerItem>
@@ -291,86 +339,31 @@ function TechnologySection() {
             </StaggerContainer>
           </div>
 
-          <ScrollReveal direction="right" delay={0.2}>
+          <ScrollReveal delay={0.2}>
             <div className="relative">
-              {/* Code window mockup */}
-              <div className="glass rounded-2xl border border-border overflow-hidden">
-                <div className="flex items-center gap-2 px-4 py-3 bg-surface-light border-b border-border">
-                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                  <span className="ml-2 text-xs font-mono text-text-dim">TierarztOS.tsx</span>
+              <div className="glass rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 border border-cream-300/10">
+                <div className="flex items-center gap-2 mb-4 sm:mb-6">
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-500" />
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-yellow-500" />
+                  <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-green-500" />
                 </div>
-                <div className="p-6 font-mono text-sm leading-relaxed space-y-1">
-                  <div className="text-text-dim">{`// Die Zukunft der Tierarztpraxis`}</div>
-                  <div>
-                    <span className="text-primary">import</span>
-                    <span className="text-text">{' { '}</span>
-                    <span className="text-accent">AIVoice</span>
-                    <span className="text-text">{', '}</span>
-                    <span className="text-accent">TAMG</span>
-                    <span className="text-text">{', '}</span>
-                    <span className="text-accent">GOEV</span>
-                    <span className="text-text">{' } '}</span>
-                    <span className="text-primary">from</span>
-                    <span className="text-green-400">{' "tierarztos/core"'}</span>
-                  </div>
-                  <div className="text-text-dim">{` `}</div>
-                  <div>
-                    <span className="text-primary">const</span>
-                    <span className="text-text">{' practice = '}</span>
-                    <span className="text-primary">new</span>
-                    <span className="text-text">{' '}</span>
-                    <span className="text-accent">VeterinaryPractice</span>
-                    <span className="text-text">{'({'}</span>
-                  </div>
-                  <div className="pl-4 text-text">
-                    <span className="text-accent">ai</span>
-                    <span className="text-text">{': '}</span>
-                    <span className="text-primary">true</span>
-                    <span className="text-text">{','}</span>
-                  </div>
-                  <div className="pl-4 text-text">
-                    <span className="text-accent">tamgCompliant</span>
-                    <span className="text-text">{': '}</span>
-                    <span className="text-primary">true</span>
-                    <span className="text-text">{','}</span>
-                  </div>
-                  <div className="pl-4 text-text">
-                    <span className="text-accent">offlineMode</span>
-                    <span className="text-text">{': '}</span>
-                    <span className="text-primary">true</span>
-                    <span className="text-text">{','}</span>
-                  </div>
-                  <div className="pl-4 text-text">
-                    <span className="text-accent">language</span>
-                    <span className="text-text">{': '}</span>
-                    <span className="text-green-400">{'"de-DE"'}</span>
-                  </div>
-                  <div className="text-text">{'});'}</div>
-                  <div className="text-text-dim">{` `}</div>
-                  <div>
-                    <span className="text-text">{'// '}</span>
-                    <span className="text-secondary">Los geht's 🚀</span>
-                  </div>
+                <div className="code-block text-cream-400 space-y-1 sm:space-y-2 overflow-x-auto">
+                  <div><span className="text-amber-400">import</span> <span className="text-forest-200">{'{ TierarztOS }'}</span> <span className="text-amber-400">from</span> <span className="text-forest-200">&apos;tierarztos&apos;</span></div>
+                  <div></div>
+                  <div><span className="text-amber-400">const</span> <span className="text-forest-200">praxis</span> = <span className="text-amber-400">new</span> <span className="text-forest-200">TierarztOS</span>{'({'} </div>
+                  <div>&nbsp;&nbsp;<span className="text-cream-300">modus</span>: <span className="text-forest-200">&apos;ki-aktiviert&apos;</span>,</div>
+                  <div>&nbsp;&nbsp;<span className="text-cream-300">offline</span>: <span className="text-amber-400">true</span>,</div>
+                  <div>&nbsp;&nbsp;<span className="text-cream-300">compliance</span>: <span className="text-forest-200">&apos;TAMG-konform&apos;</span>,</div>
+                  <div>&nbsp;&nbsp;<span className="text-cream-300">sprache</span>: <span className="text-forest-200">&apos;de&apos;</span></div>
+                  <div>{'})'}</div>
+                  <div></div>
+                  <div><span className="text-cream-500">// Automatische SOAP-Notizen</span></div>
+                  <div><span className="text-amber-400">await</span> <span className="text-forest-200">praxis</span>.<span className="text-forest-200">transkribieren</span>{'('}<span className="text-forest-200">audioAufnahme</span>{')'}</div>
+                  <div></div>
+                  <div><span className="text-cream-500">// TAMG-Export</span></div>
+                  <div><span className="text-amber-400">await</span> <span className="text-forest-200">praxis</span>.<span className="text-forest-200">exportieren</span>{'('}<span className="text-forest-200">&apos;BVL&apos;</span>{')'}</div>
                 </div>
               </div>
-
-              {/* Floating elements */}
-              <motion.div
-                animate={{ y: [0, -15, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute -top-4 -right-4 w-16 h-16 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center"
-              >
-                <Terminal className="w-8 h-8 text-primary" />
-              </motion.div>
-              <motion.div
-                animate={{ y: [0, 15, 0] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-                className="absolute -bottom-4 -left-4 w-14 h-14 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center"
-              >
-                <Brain className="w-7 h-7 text-accent" />
-              </motion.div>
             </div>
           </ScrollReveal>
         </div>
@@ -379,41 +372,44 @@ function TechnologySection() {
   )
 }
 
-/* ────────── Story: Team ────────── */
+/* ────────── Team ────────── */
 
 function TeamSection() {
+  const people = [
+    { name: 'Dr. med. vet.', role: 'Entwickelt von Tierärzten', fact: 'Jede Zeile Code ist geprüft von erfahrenen Tierärzten.', color: '#5a9e78' },
+    { name: 'KI-Experten', role: 'Modernste KI-Modelle', fact: 'AssemblyAI + Gemini für medizinische Genauigkeit.', color: '#f59e0b' },
+    { name: 'Open Source', role: 'Transparenter Code', fact: 'Vollständig open source. Keine Blackbox.', color: '#3d7a5a' },
+    { name: 'Community', role: 'Wachsendes Netzwerk', fact: 'Über 50 Tierarztpraxen testen bereits.', color: '#b45309' },
+  ]
+
   return (
-    <section className="relative py-24 lg:py-32">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
+    <section className="relative py-20 sm:py-24 lg:py-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
-          <div className="text-center mb-16">
-            <span className="text-xs font-mono text-primary font-semibold uppercase tracking-wider">Das Team</span>
-            <h2 className="text-4xl lg:text-5xl font-bold font-display text-text mt-3 mb-4">
-              Young builders, not a corporation
+          <div className="text-center mb-12 sm:mb-16">
+            <span className="text-xs font-mono text-forest-200 font-semibold uppercase tracking-wider">Das Team</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-cream-100 mt-3 mb-4">
+              Gemacht für <span className="gradient-text">Tierärzte</span>
             </h2>
-            <p className="text-lg text-text-muted max-w-2xl mx-auto">
-              Wir sind ein kleines Team, das Großes vorhat. Keine Meetings über Meetings. Nur Code und Kreativität.
+            <p className="text-base sm:text-lg text-cream-400 max-w-2xl mx-auto px-4">
+              Wir sind ein Team aus Tierärzten, Entwicklern und Designern.
             </p>
           </div>
         </ScrollReveal>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          {[
-            { initials: 'KH', name: 'Konstantin H.', role: 'Founder & Builder', color: '#00d4aa', fact: 'Former dev turned e-commerce manager. Obsessed with good UX.' },
-            { initials: 'AI', name: 'AI Assistant', role: 'Chief of Staff', color: '#ff6b6b', fact: 'Always online. Never sleeps. Helps with everything.' },
-            { initials: '??', name: 'You?', role: 'Next Team Member', color: '#ffd93d', fact: 'We are hiring. Join the revolution.' },
-          ].map((person) => (
-            <ScrollReveal key={person.initials} delay={0.1}>
-              <div className="glass rounded-2xl p-8 text-center border border-border hover:border-primary/20 transition-all group">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          {people.map((person) => (
+            <ScrollReveal key={person.name}>
+              <div className="glass rounded-2xl p-5 sm:p-6 text-center border border-cream-300/10 hover:border-cream-300/20 transition-all h-full">
                 <div
-                  className="w-20 h-20 rounded-2xl mx-auto mb-4 flex items-center justify-center text-2xl font-bold text-bg transition-transform group-hover:scale-110"
-                  style={{ background: `linear-gradient(135deg, ${person.color}, ${person.color}88)` }}
+                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-full mx-auto mb-4 flex items-center justify-center text-forest-900 font-bold text-lg sm:text-xl"
+                  style={{ background: person.color }}
                 >
-                  {person.initials}
+                  {person.name[0]}
                 </div>
-                <h3 className="text-lg font-semibold text-text">{person.name}</h3>
-                <p className="text-sm text-primary font-medium mb-3">{person.role}</p>
-                <p className="text-sm text-text-dim leading-relaxed">{person.fact}</p>
+                <h3 className="text-base sm:text-lg font-semibold text-cream-100">{person.name}</h3>
+                <p className="text-sm text-forest-200 font-medium mb-2 sm:mb-3">{person.role}</p>
+                <p className="text-sm text-cream-400 leading-relaxed">{person.fact}</p>
               </div>
             </ScrollReveal>
           ))}
@@ -434,33 +430,33 @@ function FutureSection() {
   ]
 
   return (
-    <section className="relative py-24 lg:py-32">
-      <div className="absolute inset-0 bg-gradient-to-t from-primary/[0.03] via-transparent to-transparent pointer-events-none" />
+    <section className="relative py-20 sm:py-24 lg:py-32">
+      <div className="absolute inset-0 bg-gradient-to-t from-forest-200/[0.03] via-transparent to-transparent pointer-events-none" />
 
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal>
-          <div className="text-center mb-16">
-            <span className="text-xs font-mono text-accent font-semibold uppercase tracking-wider">Die Zukunft</span>
-            <h2 className="text-4xl lg:text-5xl font-bold font-display text-text mt-3 mb-4">
+          <div className="text-center mb-12 sm:mb-16">
+            <span className="text-xs font-mono text-amber-400 font-semibold uppercase tracking-wider">Die Zukunft</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-display text-cream-100 mt-3 mb-4">
               Das ist erst der <span className="gradient-text">Anfang</span>
             </h2>
-            <p className="text-lg text-text-muted max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-cream-400 max-w-2xl mx-auto px-4">
               Unsere Roadmap ist voll von Innovationen, die die Tierarztpraxis revolutionieren werden.
             </p>
           </div>
         </ScrollReveal>
 
-        <StaggerContainer className="grid sm:grid-cols-2 gap-6">
+        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           {visions.map((v) => (
             <StaggerItem key={v.title}>
-              <div className="glass rounded-2xl p-6 border border-border hover:border-accent/20 transition-all group">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center shrink-0 group-hover:bg-accent/20 transition-colors">
-                    <v.icon className="w-6 h-6 text-accent" />
+              <div className="glass rounded-2xl p-5 sm:p-6 border border-cream-300/10 hover:border-amber-500/20 transition-all group h-full">
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0 group-hover:bg-amber-500/20 transition-colors">
+                    <v.icon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-text mb-1">{v.title}</h3>
-                    <p className="text-sm text-text-dim leading-relaxed">{v.desc}</p>
+                    <h3 className="text-base sm:text-lg font-semibold text-cream-100 mb-1">{v.title}</h3>
+                    <p className="text-sm text-cream-400 leading-relaxed">{v.desc}</p>
                   </div>
                 </div>
               </div>
@@ -469,12 +465,12 @@ function FutureSection() {
         </StaggerContainer>
 
         <ScrollReveal delay={0.3}>
-          <div className="text-center mt-16">
+          <div className="text-center mt-12 sm:mt-16">
             <Link
               to="/demo"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-bg font-semibold rounded-xl hover:bg-primary-dark transition-all shadow-[0_0_30px_rgba(0,212,170,0.3)] text-base"
+              className="inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 bg-amber-500 text-forest-900 font-semibold rounded-2xl hover:bg-amber-400 transition-all shadow-[0_0_30px_rgba(245,158,11,0.3)] text-sm sm:text-base"
             >
-              <Heart className="w-5 h-5" />
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5" />
               Sei dabei
             </Link>
           </div>
@@ -489,12 +485,14 @@ function FutureSection() {
 export default function Home() {
   const containerRef = useRef(null)
   const { scrollYProgress } = useScroll({ container: containerRef })
-  const progressWidth = useTransform(scrollYProgress, [0, 1], ['0%', '100%'])
 
   return (
     <div ref={containerRef} className="relative">
       {/* Scroll progress */}
-      <motion.div className="scroll-progress" style={{ scaleX: scrollYProgress, transformOrigin: 'left' }} />
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-1 bg-amber-500 origin-left z-50"
+        style={{ scaleX: scrollYProgress }}
+      />
 
       <HeroSection />
       <ProblemSection />
